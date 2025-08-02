@@ -1,0 +1,88 @@
+[versions]
+
+# Base
+agp = "8.6.0" # Versión del complemento de Gradle para Android (Android Gradle Plugin). Es fundamental para construir aplicaciones Android.
+kotlin = "1.9.0" # Versión del compilador y las librerías de Kotlin.
+coreKtx = "1.16.0" # Versión de core-ktx, que proporciona extensiones de Kotlin para Android Jetpack.
+junit = "4.13.2" # Versión de JUnit 4, una librería estándar para pruebas unitarias.
+junitVersion = "1.2.1" # Versión de androidx.test.ext:junit, que ofrece APIs para pruebas de instrumentación con JUnit 4.
+espressoCore = "3.6.1" # Versión de Espresso Core, una librería para pruebas de interfaz de usuario (UI testing).
+
+lifecycleRuntimeKtx = "2.8.0" # Versión de lifecycle-runtime-ktx, que proporciona soporte para corrutinas con los componentes de ciclo de vida.
+lifecycleViewmodelCompose = "2.8.0" # Versión de lifecycle-viewmodel-compose, esencial para integrar ViewModels con Jetpack Compose.
+lifecycleViewmodelSavedstate = "2.8.0" # Versión de lifecycle-viewmodel-savedstate, para guardar y restaurar el estado de los ViewModels.
+activityCompose = "1.9.0" # Versión de activity-compose, que permite usar Jetpack Compose en las Activitys.
+composeBom = "2024.04.01" # Versión de la plataforma Compose BOM (Bill of Materials). Permite gestionar las versiones de las librerías de Compose de forma conjunta.
+
+coilCompose = "2.6.0" # Versión de Coil para Jetpack Compose, una librería para carga de imágenes asíncrona.
+materialIconsExtended = "1.6.7" # Versión de las Material Icons Extended para Jetpack Compose.
+
+# Firebase
+firebaseBom = "33.1.1" # Versión del Firebase BOM (Bill of Materials). Ayuda a gestionar las versiones de todas las librerías de Firebase juntas para asegurar compatibilidad.
+services = "4.4.2" # Versión del plugin de Google Services para Gradle, necesario para integrar Firebase en el proyecto.
+crashlytics = "3.0.2" # Versión del plugin de Crashlytics para Gradle, para integrar el reporte de fallos de Firebase Crashlytics.
+credentials = "1.3.0" # Versión de la librería Credential Manager de AndroidX. Es la nueva API recomendada para gestionar credenciales y métodos de autenticación.
+playservices = "1.3.0" # Versión de la librería para integrar Credential Manager con los servicios de autenticación de Google Play.
+googleid = "1.1.1" # Versión de la librería Google ID para gestionar credenciales de Google.
+navigationCompose = "2.7.7" # Versión de la librería de navegación de Jetpack Compose.
+runtimeLivedata = "1.8.2" # Versión de runtime-livedata, que proporciona integración de LiveData con Compose.
+
+# Retrofit
+retrofit = "2.11.0" # Versión de Retrofit, una librería para peticiones HTTP. Se usará para las consultas a la API
+retrofit-converter-gson = "2.11.0" # Versión del convertidor de Retrofit para Gson, que serializa/deserializa JSON.
+
+# Serialización
+kotlinxSerializationJson = "1.6.0" # Versión de la librería Kotlinx Serialization JSON. Para serializar y deserializar objetos Kotlin a/desde JSON.
+
+[libraries]
+
+# Base
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" } # Dependencia para las extensiones de Kotlin para Android Jetpack.
+junit = { group = "junit", name = "junit", version.ref = "junit" } # Dependencia para JUnit 4, para pruebas unitarias.
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" } # Dependencia para las APIs de pruebas de instrumentación con JUnit 4.
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" } # Dependencia para Espresso Core, para pruebas de interfaz de usuario.
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" } # Dependencia para las extensiones KTX del ciclo de vida de Android.
+
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" } # Dependencia para el soporte de ViewModel en Jetpack Compose.
+androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycleViewmodelSavedstate" } # Dependencia para el soporte de estado guardado en ViewModels.
+
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" } # Dependencia para integrar Jetpack Compose en las Activitys.
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" } # Dependencia del BOM de Compose para gestionar las versiones de las librerías de Compose.
+androidx-ui = { group = "androidx.compose.ui", name = "ui" } # Librería base para la interfaz de usuario de Jetpack Compose.
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" } # Librería para gráficos de Jetpack Compose.
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" } # Librería para herramientas de Jetpack Compose (vista previa en Android Studio).
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" } # Librería para previsualización de UI en Jetpack Compose.
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" } # Manifiesto de prueba para la interfaz de usuario de Jetpack Compose.
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" } # Librería para pruebas de interfaz de usuario con JUnit 4 en Jetpack Compose.
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" } # Librería para los componentes de Material Design 3 en Jetpack Compose.
+
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" } # Dependencia de Coil para cargar imágenes en Jetpack Compose.
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" } # Dependencia para los iconos extendidos de Material Design en Jetpack Compose.
+
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" } # Dependencia del BOM de Firebase para gestionar las versiones de las librerías de Firebase.
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" } # Dependencia de Firebase Crashlytics para el reporte de fallos.
+firebase-auth = {module = "com.google.firebase:firebase-auth-ktx" } # Dependencia para Firebase Authentication con extensiones KTX.
+firebase-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" } # Dependencia de la nueva API Credential Manager de AndroidX.
+firebase-play-services = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "playservices" } # Dependencia para integrar Credential Manager con los servicios de autenticación de Google Play.
+firebase-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" } # Dependencia para la gestión de IDs de Google (parte del ecosistema de Google Identity).
+firebase-firestore = { module = "com.google.firebase:firebase-firestore"} # Dependencia para Firebase Firestore, una base de datos NoSQL en la nube.
+
+# Retrofit
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" } # Dependencia principal de Retrofit para realizar peticiones HTTP.
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit-converter-gson" } # Dependencia del convertidor de Gson para Retrofit, para trabajar con JSON.
+
+androidx-navigation-compose = {module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose"} # Dependencia para el componente de navegación en Jetpack Compose.
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" } # Dependencia para la integración de LiveData con el runtime de Compose.
+
+# Serialización
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" } # Dependencia para la serialización y deserialización de JSON en Kotlin.
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" } # Plugin de Gradle para compilar aplicaciones Android.
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" } # Plugin de Gradle para el soporte de Kotlin en proyectos Android.
+
+googleServices = { id = "com.google.gms.google-services", version.ref = "services" } # Plugin de Google Services, necesario para la integración de Firebase y otros servicios de Google.
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" } # Plugin de Firebase Crashlytics para habilitar el reporte de fallos.
+
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" } # Plugin de Kotlin para habilitar la serialización de Kotlinx.
