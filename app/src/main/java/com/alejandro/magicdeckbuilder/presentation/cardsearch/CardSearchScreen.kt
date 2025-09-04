@@ -77,6 +77,7 @@ import com.alejandro.magicdeckbuilder.ui.theme.Orange
  * @param isAddingCards Booleano que indica si la pantalla está en modo de "añadir cartas a un mazo".
  * Esto cambia la UI (muestra el selector de cantidad y botones de añadir/cerrar).
  * @param onNavigateToFriends Función de callback para navegar a la pantalla de amigos.
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Se utiliza para elementos experimentales de Material3 como OutlinedTextField
 @Composable
@@ -87,7 +88,8 @@ fun CardSearchScreen(
     userViewModel: UserViewModel,
     onAddCardToDeck: (card: Card, quantity: Int) -> Unit,
     isAddingCards: Boolean = false,
-    onNavigateToFriends: () -> Unit
+    onNavigateToFriends: () -> Unit,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     // Recoge el estado de la UI del ViewModel como un State<T> para que los cambios en el ViewModel
     // recompongan automáticamente la UI.
@@ -120,7 +122,8 @@ fun CardSearchScreen(
                 onSignOut = onSignOut, // Callback para cerrar sesión
 //                modifier = Modifier.weight(1f),
                 modifier = Modifier, // Modificador aplicado a la barra
-                onNavigateToFriends = onNavigateToFriends // Callback para navegar a amigos
+                onNavigateToFriends = onNavigateToFriends, // Callback para navegar a amigos
+                onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
             )
             // Contenido principal de la pantalla, con padding horizontal.
             Column(

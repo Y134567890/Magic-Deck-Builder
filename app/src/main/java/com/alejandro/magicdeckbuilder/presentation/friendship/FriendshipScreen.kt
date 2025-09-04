@@ -47,6 +47,7 @@ import com.alejandro.magicdeckbuilder.ui.theme.Orange
  * @param onNavigateToFriends Lambda para navegar a la propia pantalla de amigos.
  * @param onViewFriendsDecks Callback para navegar a la pantalla de mazos de un amigo,
  * recibe el UID del amigo y su nombre de usuario.
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Opt-in para usar APIs experimentales de Material3.
 @Composable
@@ -56,7 +57,8 @@ fun FriendshipScreen(
     onNavigateBack: () -> Unit,
     onSignOut: () -> Unit,
     onNavigateToFriends: () -> Unit,
-    onViewFriendsDecks: (String, String) -> Unit
+    onViewFriendsDecks: (String, String) -> Unit,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     val uiState by friendshipViewModel.uiState.collectAsState() // Recolecta el estado de la UI del ViewModel.
 
@@ -71,7 +73,8 @@ fun FriendshipScreen(
                 canNavigateBack = true,
                 onNavigateBack = onNavigateBack,
                 onSignOut = onSignOut,
-                onNavigateToFriends = onNavigateToFriends
+                onNavigateToFriends = onNavigateToFriends,
+                onNavigateToAccountManagement = onNavigateToAccountManagement
             )
         }
     ) { paddingValues ->

@@ -61,6 +61,7 @@ import com.alejandro.magicdeckbuilder.ui.theme.Orange
  * @param isViewMode Booleano que indica si la pantalla está en modo de solo lectura (no permite editar).
  * @param ownerUsername El nombre de usuario del propietario del mazo si se está viendo un mazo de amigo.
  * Será nulo si es un mazo propio o nuevo.
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Se requiere para usar componentes de Material 3 como OutlinedTextField
 @Composable
@@ -74,7 +75,8 @@ fun DeckEditScreen(
     onSignOut: () -> Unit,
     onNavigateToFriends: () -> Unit,
     isViewMode: Boolean,
-    ownerUsername: String? = null
+    ownerUsername: String? = null,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     // Recopila el estado de la UI del DeckEditViewModel como un State.
     val uiState by deckEditViewModel.uiState.collectAsState()
@@ -135,7 +137,8 @@ fun DeckEditScreen(
                     onSignOut = onSignOut, // Callback para cerrar sesión.
                     onNavigateToFriends = onNavigateToFriends, // Callback para navegar a amigos.
                     // Muestra un subtítulo si estamos en modo vista y hay un propietario especificado.
-                    subtitle = if (isViewMode && ownerUsername != null) "Mazos de $ownerUsername" else null
+                    subtitle = if (isViewMode && ownerUsername != null) "Mazos de $ownerUsername" else null,
+                    onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
                 )
             }
         },

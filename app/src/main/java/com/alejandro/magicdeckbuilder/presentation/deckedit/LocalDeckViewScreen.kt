@@ -87,6 +87,7 @@ import java.io.File
  * @param hideSection Booleano que indica si se deben ocultar elementos de la barra superior
  * (como el nombre de usuario y los botones de amigos/cerrar sesión)
  * para el Modo Offline.
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Opt-in para usar APIs experimentales de Material3
 @Composable
@@ -98,7 +99,8 @@ fun LocalDeckViewScreen(
     onSignOut: () -> Unit,
     onNavigateToFriends: () -> Unit,
     deckId: String,
-    hideSection: Boolean
+    hideSection: Boolean,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     // Recolecta los estados de los ViewModels como State de Compose.
     val uiState by localDeckViewViewModel.uiState.collectAsState()
@@ -126,7 +128,8 @@ fun LocalDeckViewScreen(
                         modifier = Modifier,
                         onSignOut = onSignOut, // Acción de cerrar sesión
                         onNavigateToFriends = onNavigateToFriends, // Acción de navegar a amigos
-                        subtitle = "Mazos locales" // Subtítulo fijo
+                        subtitle = "Mazos locales", // Subtítulo fijo
+                        onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
                     )
                 }
             } else {
@@ -139,7 +142,8 @@ fun LocalDeckViewScreen(
                     modifier = Modifier,
                     onNavigateToFriends = { }, // No hay acción de navegar a amigos en este modo
                     subtitle = "Mazos locales", // Subtítulo fijo
-                    hideSection = true // Pasa el flag `hideSection` a la barra
+                    hideSection = true, // Pasa el flag `hideSection` a la barra
+                    onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
                 )
             }
         }

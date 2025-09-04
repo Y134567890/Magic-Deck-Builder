@@ -25,6 +25,8 @@ import kotlinx.coroutines.tasks.await
  * @property errorMessage Mensaje de error a mostrar al usuario, o `null` si no hay error.
  * @property isUsernameUnique Indica si el nombre de usuario propuesto es único (para validación).
  * @property usernameSaved Indica si el nombre de usuario se guardó exitosamente.
+ * @property isGoogleUser Indica si el usuario inicia sesión con una cuenta de Google.
+ * @property privacyAccepted Indica si el usuario ha aceptado la política de privacidad.
  */
 data class UserUiState(
     val currentUser: User? = null,
@@ -33,7 +35,9 @@ data class UserUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isUsernameUnique: Boolean = true,
-    val usernameSaved: Boolean = false
+    val usernameSaved: Boolean = false,
+    val isGoogleUser: Boolean = false,
+    val privacyAccepted: Boolean = false
 )
 
 /**
@@ -67,6 +71,8 @@ class UserViewModel(
      * Carga la información del usuario actualmente autenticado desde Firestore.
      * Actualiza el [_uiState] con los datos del usuario y determina si se debe mostrar
      * el diálogo para establecer el nombre de usuario (si el usuario es nuevo o no tiene username).
+     * También detecta si el usuario ha iniciado sesión con Google, para mostrar el checkbox de
+     * aceptación de política de privacidad
      */
     fun loadCurrentUser() {
         viewModelScope.launch {
@@ -77,6 +83,9 @@ class UserViewModel(
             Log.d("UserViewModel", "loadCurrentUser: UID de FirebaseUser = ${firebaseUser?.uid}")
 
             if (firebaseUser != null) {
+
+                val isGoogleUser = firebaseUser.providerData.any { it.providerId == "google.com" }
+
                 try {
                     // Intenta obtener el documento del usuario de la colección "users" en Firestore.
                     val userDocRef = firestore.collection("users").document(firebaseUser.uid)
@@ -95,7 +104,8 @@ class UserViewModel(
                         currentState.copy(
                             currentUser = user, // Asigna el usuario cargado.
                             showUsernameDialog = shouldShowDialog, // Actualiza el estado del diálogo.
-                            isLoading = false // Desactiva el estado de carga.
+                            isLoading = false, // Desactiva el estado de carga.
+                            isGoogleUser = isGoogleUser // Actualiza el estado.
                         )
                     }
                 } catch (e: Exception) {
@@ -112,6 +122,16 @@ class UserViewModel(
     }
 
     /**
+     * Actualiza el estado de aceptación de la política de privacidad.
+     * Esta función es llamada por el Composable cuando se marca el checkbox.
+     *
+     * @param isAccepted El estado del checkbox.
+     */
+    fun onPrivacyCheckChange(isAccepted: Boolean) {
+        _uiState.update { it.copy(privacyAccepted = isAccepted) }
+    }
+
+    /**
      * Actualiza el valor del campo de entrada del nombre de usuario en el estado de la UI.
      * También resetea los indicadores de unicidad y error.
      *
@@ -124,6 +144,7 @@ class UserViewModel(
     /**
      * Intenta guardar el nombre de usuario ingresado por el usuario en Firestore.
      * Realiza una comprobación de unicidad antes de guardar.
+     * Impide la creación del usuario si no se aceptó la política de privacidad.
      */
     fun saveUsername() {
         viewModelScope.launch {
@@ -135,6 +156,12 @@ class UserViewModel(
             if (currentUsername.isBlank()) {
                 _uiState.update { it.copy(errorMessage = "El nombre de usuario no puede estar vacío.", isLoading = false) }
                 return@launch // Sale de la corrutina.
+            }
+
+            // Si el usuario es de Google y no ha aceptado la política, muestra un error.
+            if (_uiState.value.isGoogleUser && !_uiState.value.privacyAccepted) {
+                _uiState.update { it.copy(errorMessage = "Debes aceptar la política de privacidad para continuar.", isLoading = false) }
+                return@launch
             }
 
             try {

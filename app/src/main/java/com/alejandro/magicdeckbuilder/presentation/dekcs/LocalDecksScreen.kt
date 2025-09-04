@@ -40,6 +40,7 @@ import com.alejandro.magicdeckbuilder.ui.theme.Orange
  * @param onNavigateToFriends Lambda para navegar a la pantalla de amigos.
  * @param hideSection Boolean que controla la visibilidad de ciertos elementos en la TopBar,
  * usado para el "Modo Offline".
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Opt-in para usar APIs experimentales de Material3.
 @Composable
@@ -49,7 +50,8 @@ fun LocalDecksScreen(
     onNavigateToDeckView: (String) -> Unit,
     onSignOut: () -> Unit,
     onNavigateToFriends: () -> Unit,
-    hideSection: Boolean
+    hideSection: Boolean,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     val context = LocalContext.current  // Obtiene el contexto de Android para el ViewModel Factory.
     // Obtiene una instancia de LocalDecksViewModel usando su factory.
@@ -75,7 +77,8 @@ fun LocalDecksScreen(
                     onSignOut = onSignOut,
                     modifier = Modifier,
                     onNavigateToFriends = onNavigateToFriends,
-                    subtitle = topBarSubtitle
+                    subtitle = topBarSubtitle,
+                    onNavigateToAccountManagement = onNavigateToAccountManagement
                 )
             } else {
                 // TopBar adaptada para el "Modo Offline".
@@ -88,7 +91,8 @@ fun LocalDecksScreen(
                     modifier = Modifier,
                     onNavigateToFriends = { }, // Navegación a amigos deshabilitada en offline.
                     subtitle = topBarSubtitle,
-                    hideSection = true // Indica a la TopBar que oculte secciones correspondientes.
+                    hideSection = true, // Indica a la TopBar que oculte secciones correspondientes.
+                    onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
                 )
             }
         }

@@ -47,12 +47,13 @@ class SignUpViewModel : BaseAuthViewModel() {
      *
      * @param email El email actual en el campo de texto.
      * @param password La contraseña actual en el campo de texto.
+     * @param isPrivacyAccepted El estado actual del checkbox de aceptación de la política de privacidad.
      */
-    fun onSignUpChanged(email: String, password: String) {
+    fun onSignUpChanged(email: String, password: String, isPrivacyAccepted: Boolean) {
         _email.value = email // Actualiza el email en el ViewModel.
         _password.value = password // Actualiza la contraseña en el ViewModel.
-        // Habilita el botón de registro si tanto el email como la contraseña son válidos.
-        _signUpEnable.value = isValidEmail(email) && isValidPassword(password)
+        // Habilita el botón de registro si el email y la contraseña son válidos, Y la política ha sido aceptada.
+        _signUpEnable.value = isValidEmail(email) && isValidPassword(password) && isPrivacyAccepted
     }
 
     /**

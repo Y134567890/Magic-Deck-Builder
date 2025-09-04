@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.alejandro.magicdeckbuilder.presentation.signup.PrivacyPolicyCheckbox
 import com.alejandro.magicdeckbuilder.presentation.user.UserUiState
 import com.alejandro.magicdeckbuilder.ui.theme.Black
 import com.alejandro.magicdeckbuilder.ui.theme.Orange
@@ -33,8 +34,9 @@ import com.alejandro.magicdeckbuilder.ui.theme.Orange
 fun UsernameDialog(
     uiState: UserUiState,
     onUsernameInputChange: (String) -> Unit,
+    onPrivacyCheckChange: (Boolean) -> Unit,
     onSaveUsername: () -> Unit,
-    onDismiss: () -> Unit // Aunque no lo usemos para cerrar, es buena práctica mantenerlo
+    onDismiss: () -> Unit
 ) {
     // El diálogo solo se muestra si `uiState.showUsernameDialog` es true.
     if (uiState.showUsernameDialog) {
@@ -119,11 +121,23 @@ fun UsernameDialog(
                         )
                     }
 
+                    if (uiState.isGoogleUser) {
+                        PrivacyPolicyCheckbox(
+                            isChecked = uiState.privacyAccepted,
+                            onCheckedChange = onPrivacyCheckChange
+                        )
+                    }
+
                     // Botón para guardar el nombre de usuario.
                     Button(
                         onClick = onSaveUsername, // Invoca el callback para guardar el nombre.
-                        // El botón está habilitado solo si el input no está vacío y no hay una carga en progreso.
-                        enabled = uiState.usernameInput.isNotBlank() && !uiState.isLoading,
+                        // El botón está habilitado solo si:
+                        //      - El input no está vacío
+                        //      - No hay una carga en progreso
+                        //      - El usuario no inició sesión con cuenta de Google o aceptó la política de privacidad
+                        enabled = uiState.usernameInput.isNotBlank()
+                                && !uiState.isLoading
+                                && (!uiState.isGoogleUser || uiState.privacyAccepted),
                         modifier = Modifier.fillMaxWidth(), // Ocupa el ancho.
                         colors = ButtonDefaults.buttonColors( // Colores personalizados para el botón.
                             containerColor = Orange,

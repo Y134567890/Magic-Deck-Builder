@@ -22,6 +22,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.alejandro.magicdeckbuilder.data.Card
+import com.alejandro.magicdeckbuilder.presentation.accountmanagement.AccountManagementScreen
+import com.alejandro.magicdeckbuilder.presentation.accountmanagement.AccountManagementViewModel
 import com.alejandro.magicdeckbuilder.presentation.cardsearch.CardSearchScreen
 import com.alejandro.magicdeckbuilder.presentation.deckedit.DeckEditScreen
 import com.alejandro.magicdeckbuilder.presentation.deckedit.DeckEditViewModel
@@ -102,6 +104,8 @@ sealed class Screen(val route: String) {
             return "deckView/$deckId/$ownerUid/$ownerUsername"
         }
     }
+    // Ruta para la pantalla de manejo de cuenta
+    object AccountManagement : Screen("accountManagement")
 }
 
 /**
@@ -236,7 +240,25 @@ fun NavigationWrapper(
                 navigateToDecks = { navHostController.navigate(Screen.Decks.route) },  // Navega a Decks (online).
                 navigateToLocalDecks = { navHostController.navigate(Screen.LocalDecks.route) }, // Navega a LocalDecks.
                 userViewModel = userViewModel,
-                onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) } // Navega a Friends.
+                onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) }, // Navega a Friends.
+                onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) } // Navega a la pantalla de gestión de cuenta
+            )
+        }
+
+        // Pantalla para la pantalla de gestión de cuenta
+        composable(Screen.AccountManagement.route) {
+            val viewModel: AccountManagementViewModel = viewModel()
+            AccountManagementScreen(
+                auth = auth,
+                onNavigateBack = { navHostController.popBackStack() },
+                onAccountDeleted = {
+                    auth.signOut()
+                    navHostController.navigate(Screen.Start.route) {
+                        popUpTo(navHostController.graph.id) { inclusive = true }
+                    }
+                },
+                googleSignInClient = googleSignInClient,
+                viewModel = viewModel
             )
         }
 
@@ -290,7 +312,8 @@ fun NavigationWrapper(
                     navHostController.popBackStack()
                 },
                 isAddingCards = isAddingCards,
-                onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) }
+                onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
+                onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
             )
         }
 
@@ -324,7 +347,8 @@ fun NavigationWrapper(
                         popUpTo(Screen.Decks.route) { inclusive = true }
                     }
                 },
-                onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) }
+                onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
+                onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
             )
         }
 
@@ -353,7 +377,8 @@ fun NavigationWrapper(
                     }
                 },
                 onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
-                hideSection = hideSection
+                hideSection = hideSection,
+                onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
             )
         }
 
@@ -390,7 +415,8 @@ fun NavigationWrapper(
                     },
                     onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
                     deckId = deckId,
-                    hideSection = hideSection
+                    hideSection = hideSection,
+                    onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
                 )
             } else {
                 Log.e("NavigationWrapper", "DeckId nulo para LocalDeckView.")
@@ -463,7 +489,8 @@ fun NavigationWrapper(
                 },
                 onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
                 isViewMode = false, // Modo edición
-                ownerUsername = null // No se necesita el nombre de usuario del propietario en modo edición.
+                ownerUsername = null, // No se necesita el nombre de usuario del propietario en modo edición.
+                onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
             )
         }
 
@@ -484,7 +511,8 @@ fun NavigationWrapper(
                 onViewFriendsDecks = { friendUid, friendUsername ->
                     // Navega a la pantalla de mazos de un amigo.
                     navHostController.navigate(Screen.FriendDecks.createRoute(friendUid, friendUsername))
-                }
+                },
+                onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
             )
         }
 
@@ -532,7 +560,8 @@ fun NavigationWrapper(
                     },
                     onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
                     isFriendDecksView = true, // Indica que se están viendo mazos de un amigo.
-                    friendUsername = friendUsername // Pasa el nombre de usuario del amigo para mostrarlo en la UI.
+                    friendUsername = friendUsername, // Pasa el nombre de usuario del amigo para mostrarlo en la UI.
+                    onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
                 )
             } else {
                 Log.e("NavigationWrapper", "UID o nombre de usuario del amigo nulos para la ruta FriendDecks.")
@@ -597,7 +626,8 @@ fun NavigationWrapper(
                     },
                     onNavigateToFriends = { navHostController.navigate(Screen.Friendship.route) },
                     isViewMode = true, // Establece la bandera para indicar que es modo visualización.
-                    ownerUsername = ownerUsername // Pasa el username del propietario para el título.
+                    ownerUsername = ownerUsername, // Pasa el username del propietario para el título.
+                    onNavigateToAccountManagement = { navHostController.navigate(Screen.AccountManagement.route) }
                 )
             } else {
                 Log.e("NavigationWrapper", "DeckId, Owner UID o Username son nulos para la ruta DeckView.")

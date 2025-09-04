@@ -55,6 +55,7 @@ import com.alejandro.magicdeckbuilder.ui.theme.Orange
  * @param isFriendDecksView Flag que indica si esta vista es para mostrar los mazos de un amigo (true)
  * o los mazos propios del usuario (false). Por defecto es `false`.
  * @param friendUsername Nombre de usuario del amigo, si `isFriendDecksView` es `true`. Se usa en el subtítulo de la TopBar.
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Opt-in para usar APIs experimentales de Material3
 @Composable
@@ -66,7 +67,8 @@ fun DecksScreen(
     onSignOut: () -> Unit,
     onNavigateToFriends: () -> Unit,
     isFriendDecksView: Boolean = false,
-    friendUsername: String? = null
+    friendUsername: String? = null,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     // Recolecta los estados de los ViewModels como State de Compose.
     val uiState by decksViewModel.uiState.collectAsState()
@@ -95,10 +97,12 @@ fun DecksScreen(
                 snackbarHostState.showSnackbar("Mazo '${state.deckName}' guardado localmente.")
                 decksViewModel.clearDownloadState() // Limpiar el estado para evitar que el SnackBar se muestre de nuevo
             }
+
             is DownloadStatus.Error -> {
                 snackbarHostState.showSnackbar("Error al descargar: ${state.message}")
                 decksViewModel.clearDownloadState()
             }
+
             else -> {} // Ignorar otros estados (Idle, Downloading)
         }
     }
@@ -114,7 +118,8 @@ fun DecksScreen(
                     onSignOut = onSignOut,
                     modifier = Modifier,
                     onNavigateToFriends = onNavigateToFriends,
-                    subtitle = topBarSubtitle // Pasa el subtítulo calculado a la barra superior
+                    subtitle = topBarSubtitle, // Pasa el subtítulo calculado a la barra superior
+                    onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
                 )
             }
         },
@@ -145,7 +150,13 @@ fun DecksScreen(
             modifier = Modifier
                 .fillMaxSize() // Ocupa el tamaño disponible
                 .padding(paddingValues) // Aplica el padding de la Scaffold
-                .background(Brush.verticalGradient(listOf(Gray, Black), startY = 0f, endY = 600f))  // Fondo degradado
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Gray, Black),
+                        startY = 0f,
+                        endY = 600f
+                    )
+                )  // Fondo degradado
         ) {
             // Manejo del estado de carga, error y lista vacía.
             if (uiState.isLoading) {
@@ -209,7 +220,9 @@ fun DecksScreen(
         val focusManager = LocalFocusManager.current // Para gestionar el foco del teclado
 
         AlertDialog(
-            onDismissRequest = { showCreateDeckDialog = false }, // Permite cerrar el diálogo al tocar fuera o presionar atrás
+            onDismissRequest = {
+                showCreateDeckDialog = false
+            }, // Permite cerrar el diálogo al tocar fuera o presionar atrás
             properties = DialogProperties(usePlatformDefaultWidth = false), // Permite que el diálogo use un ancho personalizado
             title = {
                 Text(
@@ -225,7 +238,8 @@ fun DecksScreen(
                         value = newDeckName,
                         onValueChange = {
                             newDeckName = it
-                            if (it.isNotBlank()) newDeckNameError = null // Limpiar el error si el usuario empieza a escribir
+                            if (it.isNotBlank()) newDeckNameError =
+                                null // Limpiar el error si el usuario empieza a escribir
                         },
                         label = { Text("Nombre del Mazo *", color = White.copy(alpha = 0.7f)) },
                         singleLine = true,
@@ -234,8 +248,11 @@ fun DecksScreen(
                             .focusRequester(focusRequester), // Asocia el FocusRequester para enfocar este campo
                         isError = newDeckNameError != null, // Indica si hay un error en el campo
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), // Acción "Siguiente" en el teclado
-                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
-                            FocusDirection.Down) }), // Mueve el foco al siguiente campo
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(
+                                FocusDirection.Down
+                            )
+                        }), // Mueve el foco al siguiente campo
                         colors = TextFieldDefaults.outlinedTextFieldColors( // Colores personalizados para el campo
                             focusedBorderColor = Orange,
                             unfocusedBorderColor = White.copy(alpha = 0.5f),
@@ -267,7 +284,11 @@ fun DecksScreen(
                         minLines = 3,
                         maxLines = 5,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(
+                                FocusDirection.Down
+                            )
+                        }),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Orange,
                             unfocusedBorderColor = White.copy(alpha = 0.5f),
@@ -284,7 +305,12 @@ fun DecksScreen(
                     OutlinedTextField(
                         value = newDeckFormat,
                         onValueChange = { newDeckFormat = it },
-                        label = { Text("Formato (ej. Standard)", color = White.copy(alpha = 0.7f)) },
+                        label = {
+                            Text(
+                                "Formato (ej. Standard)",
+                                color = White.copy(alpha = 0.7f)
+                            )
+                        },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -310,7 +336,11 @@ fun DecksScreen(
                             newDeckNameError = "El nombre no puede estar vacío."
                         } else {
                             // Llama a la función del ViewModel para crear el mazo con los datos ingresados.
-                            decksViewModel.createNewDeck(newDeckName, newDeckDescription, newDeckFormat)
+                            decksViewModel.createNewDeck(
+                                newDeckName,
+                                newDeckDescription,
+                                newDeckFormat
+                            )
                             showCreateDeckDialog = false // Oculta el diálogo después de la creación
                         }
                     },
@@ -429,7 +459,11 @@ fun DeckCard(
 
                     // Botón de borrar
                     IconButton(onClick = onDeleteClick) {
-                        Icon(Icons.Filled.Delete, "Borrar mazo", tint = MaterialTheme.colorScheme.error) // Color del icono de borrar
+                        Icon(
+                            Icons.Filled.Delete,
+                            "Borrar mazo",
+                            tint = MaterialTheme.colorScheme.error
+                        ) // Color del icono de borrar
                     }
                 } else {
                     // Si es la vista de un amigo, solo mostramos el botón de "Ver".

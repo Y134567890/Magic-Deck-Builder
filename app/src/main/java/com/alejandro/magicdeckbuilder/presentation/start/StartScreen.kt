@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -201,21 +202,26 @@ fun CustomButton(modifier: Modifier, painter: Painter, title: String) {
             .border(2.dp, ShapeButton, CircleShape), // Borde con forma de círculo.
         contentAlignment = Alignment.CenterStart // Centra el contenido al inicio (izquierda).
     ) {
-        // Icono del botón.
-        Image(
-            painter = painter,
-            contentDescription = "",
-            modifier = Modifier
-                .padding(start = 16.dp) // Relleno a la izquierda del icono.
-                .size(16.dp) // Tamaño del icono.
-        )
-        // Texto del botón.
-        Text(
-            text = title,
-            color = Color.White,
-            modifier = Modifier.fillMaxWidth(), // Ocupa el ancho disponible.
-            textAlign = TextAlign.Center, // Centra el texto.
-            fontWeight = FontWeight.Bold
-        )
+        Row() {
+            // Icono del botón.
+            Image(
+                painter = painter,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(start = 16.dp) // Relleno a la izquierda del icono.
+                    .size(16.dp) // Tamaño del icono.
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            // Texto del botón.
+            Text(
+                text = title,
+                color = Color.White,
+                modifier = Modifier.fillMaxWidth(), // Ocupa el ancho disponible.
+                textAlign = TextAlign.Center, // Centra el texto.
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

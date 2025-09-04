@@ -1,5 +1,7 @@
 package com.alejandro.magicdeckbuilder.presentation.signup
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,10 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -25,14 +31,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alejandro.magicdeckbuilder.R
@@ -65,6 +79,7 @@ fun SignUpScreen(
     val errorMessage by viewModel.errorMessage.observeAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val registrationComplete by viewModel.registrationComplete.observeAsState(initial = false)
+    val privacyPolicyAccepted = remember { mutableStateOf(false) }
 
     // Efecto lanzado cuando `registrationComplete` cambia.
     // Si el registro fue exitoso, navega a la pantalla de verificación pendiente.
@@ -90,12 +105,23 @@ fun SignUpScreen(
             IconoVolver(navigateBack) // Botón de retroceso.
             EmailText(Modifier.align(Alignment.Start)) // Etiqueta "Email" alineada al inicio.
             Spacer(Modifier.height(8.dp))
-            EmailField(email) { viewModel.onSignUpChanged(it, password) } // Campo de texto para el email.
+            EmailField(email) { viewModel.onSignUpChanged(it, password, privacyPolicyAccepted.value) } // Campo de texto para el email.
             Spacer(Modifier.height(48.dp))
             PasswordText(Modifier.align(Alignment.Start)) // Etiqueta "Password" alineada al inicio.
             Spacer(Modifier.height(8.dp))
-            PasswordField(password) { viewModel.onSignUpChanged(email, it) } // Campo de texto para la contraseña.
+            PasswordField(password) { viewModel.onSignUpChanged(email, it, privacyPolicyAccepted.value) } // Campo de texto para la contraseña.
             Spacer(Modifier.height(48.dp))
+
+            PrivacyPolicyCheckbox(
+                isChecked = privacyPolicyAccepted.value,
+                onCheckedChange = {
+                    privacyPolicyAccepted.value = it
+                    viewModel.onSignUpChanged(email, password, it)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             SignUpButton(signUpEnable, isLoading) { viewModel.onSignUpSelected(auth) } // Botón de Registro.
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -114,6 +140,66 @@ fun SignUpScreen(
                 )
             }
         }
+    }
+}
+
+/**
+ * Composable privado para el checkbox y el texto de la política de privacidad.
+ *
+ * @param isChecked El estado actual del checkbox.
+ * @param onCheckedChange Callback que se invoca cuando el estado del checkbox cambia.
+ */
+@Composable
+fun PrivacyPolicyCheckbox(
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    val context = LocalContext.current
+    val url = "https://docs.google.com/document/d/1Kq6Pii1UPlzNGHOUSrm39EzAPs3dGAaKjXU_FIOCtek/edit?usp=sharing"
+
+    val annotatedString = buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(
+                color = White
+            )
+        ) {
+            append("He leído y acepto la ")
+        }
+        pushStringAnnotation(tag = "URL", annotation = url)
+        withStyle(
+            style = SpanStyle(
+                color = Blue,
+                textDecoration = TextDecoration.Underline
+            )
+        ) {
+            append("política de privacidad")
+        }
+        pop()
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = isChecked,
+            onCheckedChange = onCheckedChange,
+            colors = CheckboxDefaults.colors(
+                checkedColor = Orange,
+                uncheckedColor = White
+            )
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        ClickableText(
+            text = annotatedString,
+            onClick = { offset ->
+                annotatedString.getStringAnnotations(tag = "URL", start = offset, end = offset)
+                    .firstOrNull()?.let {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.item))
+                        context.startActivity(intent)
+                    }
+            }
+        )
     }
 }
 

@@ -44,6 +44,7 @@ import com.google.firebase.auth.FirebaseAuth
  * @param navigateToLocalDecks Callback para navegar a la pantalla de mazos locales.
  * @param userViewModel ViewModel que gestiona la información y el estado del usuario.
  * @param onNavigateToFriends Callback para navegar a la pantalla de amigos.
+ * @param onNavigateToAccountManagement Función de callback para navegar a la pantalla de gestión de cuenta
  */
 @OptIn(ExperimentalMaterial3Api::class) // Opt-in para usar APIs experimentales de Material3.
 @Composable
@@ -54,7 +55,8 @@ fun HomeScreen(
     navigateToDecks: () -> Unit,
     navigateToLocalDecks: () -> Unit,
     userViewModel: UserViewModel,
-    onNavigateToFriends: () -> Unit
+    onNavigateToFriends: () -> Unit,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     val uiState by userViewModel.uiState.collectAsState() // Recolecta el estado de la UI del UserViewModel.
 
@@ -88,7 +90,8 @@ fun HomeScreen(
                 onNavigateBack = { /* No hace nada en Home */ },
                 onSignOut = onSignOut,
                 modifier = Modifier, // Modificador para la TopBar.
-                onNavigateToFriends = onNavigateToFriends // Callback para navegar a la pantalla de amigos.
+                onNavigateToFriends = onNavigateToFriends, // Callback para navegar a la pantalla de amigos.
+                onNavigateToAccountManagement = onNavigateToAccountManagement // Callback para navegar a gestión de cuenta
             )
             Column(
                 modifier = Modifier
@@ -161,6 +164,7 @@ fun HomeScreen(
     UsernameDialog(
         uiState = uiState, // Pasa el estado de la UI del UserViewModel.
         onUsernameInputChange = userViewModel::onUsernameInputChange, // Callback para cambios en el input del nombre de usuario.
+        onPrivacyCheckChange = userViewModel::onPrivacyCheckChange,
         onSaveUsername = userViewModel::saveUsername, // Callback para guardar el nombre de usuario.
         onDismiss = {  } // No permitir cerrar si no hay nombre de usuario (la lógica está en el diálogo)
     )

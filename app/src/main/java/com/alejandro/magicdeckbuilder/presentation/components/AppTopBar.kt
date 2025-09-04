@@ -32,6 +32,7 @@ import com.alejandro.magicdeckbuilder.ui.theme.Gray
  * @param subtitle Un subtítulo opcional para mostrar debajo del nombre de usuario.
  * @param hideSection Booleano que, si es true, oculta la sección de acciones (botón de menú).
  * Se usa para ocultar el menú desplegable en el modo offline
+ * @param onNavigateToAccountManagement Callback para navegar a la pantalla de gestión de cuenta.
  */
 @OptIn(ExperimentalMaterial3Api::class) // Se requiere para usar TopAppBar de Material 3
 @Composable
@@ -43,7 +44,8 @@ fun AppTopBar(
     onNavigateToFriends: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
-    hideSection: Boolean = false
+    hideSection: Boolean = false,
+    onNavigateToAccountManagement: () -> Unit
 ) {
     // Estado mutable para controlar la visibilidad del menú desplegable.
     var showMenu by remember { mutableStateOf(false) }
@@ -103,6 +105,14 @@ fun AppTopBar(
                         onClick = {
                             showMenu = false // Oculta el menú
                             onNavigateToFriends() // Navega a la pantalla de amigos
+                        }
+                    )
+                    // Ítem del menú: "Gestión de cuenta"
+                    DropdownMenuItem(
+                        text = { Text("Gestión de cuenta", color = White) },
+                        onClick = {
+                            showMenu = false
+                            onNavigateToAccountManagement() // NUEVO
                         }
                     )
                     // Ítem del menú: "Cerrar Sesión"
