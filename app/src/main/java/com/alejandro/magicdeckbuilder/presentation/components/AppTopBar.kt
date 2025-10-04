@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import com.alejandro.magicdeckbuilder.ui.theme.Black
 import com.alejandro.magicdeckbuilder.ui.theme.Gray
+import kotlinx.coroutines.launch
 
 /**
  * Componente Composable que representa la barra superior de la aplicación (TopBar).
@@ -50,6 +52,18 @@ fun AppTopBar(
     // Estado mutable para controlar la visibilidad del menú desplegable.
     var showMenu by remember { mutableStateOf(false) }
 
+    // Usa `rememberCoroutineScope` para obtener un alcance de corrutina.
+    // Esto permite lanzar corrutinas que están vinculadas al ciclo de vida del composable,
+    // asegurando que las operaciones asíncronas se cancelen automáticamente cuando el
+    // composable sale de la composición.
+    val coroutineScope = rememberCoroutineScope()
+
+    // Variable para registro del momento del último clic.
+    var lastClickTime by remember { mutableStateOf(0L) }
+
+    // Define el tiempo mínimo (en milisegundos) que debe transcurrir entre dos clics.
+    val clickThreshold = 500L
+
     // Componente TopAppBar de Material Design 3.
     TopAppBar(
         title = {
@@ -73,7 +87,26 @@ fun AppTopBar(
         navigationIcon = {
             // Icono de navegación (botón de volver)
             if (canNavigateBack) { // Solo muestra el botón si canNavigateBack es true
-                IconButton(onClick = onNavigateBack) { // Al hacer clic, invoca el callback onNavigateBack
+                IconButton(
+                    onClick = {
+                        // Lanza una nueva corrutina en el alcance (`coroutineScope`) del composable
+                        // para ejecutar lógica asíncrona dentro del onClick.
+                        coroutineScope.launch {
+                            // Se obtiene el tiempo actual del sistema en milisegundos.
+                            val currentTime = System.currentTimeMillis()
+
+                            // Se comprueba si el tiempo transcurrido desde el último clic es mayor
+                            // que el umbral de 500 ms.
+                            if (currentTime - lastClickTime > clickThreshold) {
+                                // Si ha pasado suficiente tiempo, actualiza `lastClickTime` al tiempo actual.
+                                lastClickTime = currentTime
+                                // Se ejecuta la acción de navegación.
+                                // Esto previene el mal funcionamiento por realizar varias pulsaciones seguidas en muy poco tiempo
+                                onNavigateBack()
+                            }
+                        }
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Icono de flecha hacia atrás
                         contentDescription = "Volver", // Descripción para accesibilidad

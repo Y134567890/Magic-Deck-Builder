@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -100,6 +101,7 @@ fun FilterDialog(
                 modifier = Modifier
                     .padding(16.dp) // Padding interior para el contenido de la columna.
                     .verticalScroll(rememberScrollState()) // Hace que la columna sea desplazable verticalmente si el contenido excede el tamaño.
+                    .imePadding() // Para el ajuste con el teclado
             ) {
                 // Título del diálogo.
                 Text(

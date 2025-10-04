@@ -14,3 +14,12 @@
 .cxx
 local.properties
 /app/google-services.json
+
+# Archivos de salida de la aplicación
+*.apk
+*.aab
+
+# Archivos de firma
+*.jks
+*.keystore
+/keystore_credentials.properties

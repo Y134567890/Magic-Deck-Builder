@@ -20,8 +20,8 @@ android {
     defaultConfig {
         applicationId = "com.alejandro.magicdeckbuilder"
         minSdk = 28
-        targetSdk = 34
-        versionCode = 1
+        targetSdk = 35
+        versionCode = 3
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
