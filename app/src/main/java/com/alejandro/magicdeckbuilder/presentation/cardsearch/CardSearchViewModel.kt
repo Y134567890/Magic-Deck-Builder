@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
  * @param showFilterDialog Booleano que controla la visibilidad del diálogo de filtros.
  * @param selectedCard La carta que está actualmente seleccionada (ej. para mostrar el diálogo de carta grande).
  * @param filters Objeto [Filters] que contiene los filtros de búsqueda aplicados actualmente.
+ * @param hasSearched Booleano para impedir que se muestre el texto correspondiente a no encontrar cartas antes de realizar una búsqueda.
  */
 data class CardSearchUiState(
     val searchText: String = "",
@@ -35,7 +36,8 @@ data class CardSearchUiState(
     val canLoadMore: Boolean = true,
     val showFilterDialog: Boolean = false,
     val selectedCard: Card? = null,
-    val filters: Filters = Filters()
+    val filters: Filters = Filters(),
+    val hasSearched: Boolean = false
 )
 
 /**
@@ -140,6 +142,7 @@ class CardSearchViewModel : ViewModel() {
     // MutableStateFlow que mantiene el estado actual de la UI de la pantalla de búsqueda.
     // Los cambios en _uiState se reflejarán automáticamente en la UI que lo observe.
     private val _uiState = MutableStateFlow(CardSearchUiState())
+
     // Exposición de _uiState como un StateFlow de solo lectura para la UI.
     val uiState: StateFlow<CardSearchUiState> = _uiState.asStateFlow()
 
@@ -171,7 +174,16 @@ class CardSearchViewModel : ViewModel() {
         // - Permite cargar más (asume que habrá resultados al principio).
         // - Establece isLoading a true.
         // - Limpia cualquier mensaje de error previo.
-        _uiState.update { it.copy(cards = emptyList(), currentPage = 1, canLoadMore = true, isLoading = true, errorMessage = null) }
+        _uiState.update {
+            it.copy(
+                cards = emptyList(),
+                currentPage = 1,
+                canLoadMore = true,
+                isLoading = true,
+                errorMessage = null,
+                hasSearched = true
+            )
+        }
         searchCards() // Llama a la función privada que realiza la búsqueda real.
     }
 
@@ -231,7 +243,8 @@ class CardSearchViewModel : ViewModel() {
                     page = _uiState.value.currentPage // El número de página actual para la paginación
                 )
 
-                val receivedCards = response.data // Extrae la lista de cartas del cuerpo de la respuesta.
+                val receivedCards =
+                    response.data // Extrae la lista de cartas del cuerpo de la respuesta.
 
                 // --- Manejo de resultados de la API ---
                 if (receivedCards.isEmpty()) {
@@ -310,7 +323,15 @@ class CardSearchViewModel : ViewModel() {
         _uiState.update { it.copy(filters = newFilters, showFilterDialog = false) }
         currentFilters = newFilters // Actualiza la variable interna de filtros.
         // Reinicia el estado para una nueva búsqueda con los filtros aplicados.
-        _uiState.update { it.copy(cards = emptyList(), currentPage = 1, canLoadMore = true, isLoading = true, errorMessage = null) }
+        _uiState.update {
+            it.copy(
+                cards = emptyList(),
+                currentPage = 1,
+                canLoadMore = true,
+                isLoading = true,
+                errorMessage = null
+            )
+        }
         onSearch() // Vuelve a buscar cartas con los nuevos filtros.
     }
 
@@ -323,7 +344,15 @@ class CardSearchViewModel : ViewModel() {
         _uiState.update { it.copy(filters = Filters()) }
         currentFilters = Filters() // Actualiza la variable interna.
         // Reinicia el estado para una nueva búsqueda sin filtros.
-        _uiState.update { it.copy(cards = emptyList(), currentPage = 1, canLoadMore = true, isLoading = true, errorMessage = null) }
+        _uiState.update {
+            it.copy(
+                cards = emptyList(),
+                currentPage = 1,
+                canLoadMore = true,
+                isLoading = true,
+                errorMessage = null
+            )
+        }
         onSearch() // Vuelve a buscar cartas sin filtros.
     }
 

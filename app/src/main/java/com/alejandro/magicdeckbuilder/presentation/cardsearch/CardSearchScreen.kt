@@ -111,7 +111,13 @@ fun CardSearchScreen(
     Box(
         modifier = Modifier
             .fillMaxSize() // Ocupa el tamaño disponible
-            .background(Brush.verticalGradient(listOf(Gray, Black), startY = 0f, endY = 600f)), // Fondo degradado
+            .background(
+                Brush.verticalGradient(
+                    listOf(Gray, Black),
+                    startY = 0f,
+                    endY = 600f
+                )
+            ), // Fondo degradado
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             // Barra superior de la aplicación.
@@ -143,12 +149,22 @@ fun CardSearchScreen(
                         label = { Text("Buscar carta...", color = White) }, // Etiqueta del campo
                         singleLine = true, // Limita a una sola línea de texto
                         modifier = Modifier.weight(1f), // Ocupa el espacio restante en la fila
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = White) }, // Icono de búsqueda al inicio
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Buscar",
+                                tint = White
+                            )
+                        }, // Icono de búsqueda al inicio
                         trailingIcon = {
                             // Icono de cerrar/borrar texto si el campo de búsqueda no está vacío
                             if (uiState.searchText.isNotBlank()) {
                                 IconButton(onClick = { viewModel.onSearchTextChanged("") }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Borrar texto", tint = White)
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Borrar texto",
+                                        tint = White
+                                    )
                                 }
                             }
                         },
@@ -192,16 +208,29 @@ fun CardSearchScreen(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = Orange)
                     }
-                } else if (uiState.cards.isEmpty() && !uiState.isLoading && uiState.errorMessage == null && uiState.searchText.isNotBlank()) {
+                } else if (uiState.cards.isEmpty()
+                    && !uiState.isLoading
+                    && uiState.errorMessage == null
+//                    && uiState.searchText.isNotBlank()
+                    && uiState.hasSearched
+                ) {
                     // Si no hay cartas, no está cargando, no hay error y se ha buscado algo (sin resultados).
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No se encontraron cartas.", style = MaterialTheme.typography.headlineSmall, color = White)
+                        Text(
+                            "No se encontraron cartas.",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = White
+                        )
                     }
                 } else if (uiState.errorMessage != null) {
                     // Si hay un mensaje de error, lo muestra.
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 //                        Text("Error: ${uiState.errorMessage}", color = MaterialTheme.colorScheme.error)
-                        Text("${uiState.errorMessage}", style = MaterialTheme.typography.headlineSmall, color = White)
+                        Text(
+                            "${uiState.errorMessage}",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = White
+                        )
                     }
                 } else {
                     // Si hay cartas, las muestra en una cuadrícula.
@@ -255,7 +284,10 @@ fun CardSearchScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.9f) // Ocupa el 90% del ancho de la pantalla
-                            .background(Black, RoundedCornerShape(8.dp)) // Fondo negro con esquinas redondeadas
+                            .background(
+                                Black,
+                                RoundedCornerShape(8.dp)
+                            ) // Fondo negro con esquinas redondeadas
                             .padding(bottom = if (isAddingCards) 16.dp else 0.dp), // Padding inferior si se están añadiendo cartas
                         horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente los elementos
                     ) {
@@ -272,7 +304,7 @@ fun CardSearchScreen(
                                 contentScale = ContentScale.FillWidth, // Escala la imagen para que llene el ancho
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {  } // Evita que tocar la imagen cierre el diálogo
+                                    .clickable { } // Evita que tocar la imagen cierre el diálogo
                             )
                         } else {
                             // Si no hay URL de imagen, muestra un Box con un mensaje.
@@ -310,7 +342,11 @@ fun CardSearchScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 // Botón para disminuir la cantidad
                                 IconButton(onClick = { if (quantityToAdd > 1) quantityToAdd-- }) {
-                                    Icon(Icons.Filled.Remove, contentDescription = "Disminuir cantidad", tint = Orange)
+                                    Icon(
+                                        Icons.Filled.Remove,
+                                        contentDescription = "Disminuir cantidad",
+                                        tint = Orange
+                                    )
                                 }
                                 Text(
                                     text = quantityToAdd.toString(), // Muestra la cantidad actual
@@ -319,7 +355,11 @@ fun CardSearchScreen(
                                 )
                                 // Botón para aumentar la cantidad
                                 IconButton(onClick = { quantityToAdd++ }) {
-                                    Icon(Icons.Filled.Add, contentDescription = "Aumentar cantidad", tint = Orange)
+                                    Icon(
+                                        Icons.Filled.Add,
+                                        contentDescription = "Aumentar cantidad",
+                                        tint = Orange
+                                    )
                                 }
                             }
 
@@ -335,7 +375,10 @@ fun CardSearchScreen(
                                 // Botón para añadir al mazo
                                 Button(
                                     onClick = {
-                                        onAddCardToDeck(card, quantityToAdd) // Llama al callback con la carta y la cantidad
+                                        onAddCardToDeck(
+                                            card,
+                                            quantityToAdd
+                                        ) // Llama al callback con la carta y la cantidad
                                         viewModel.selectCard(null) // Deselecciona la carta
                                         showLargeCardDialog = false // Cierra el diálogo
                                     },
