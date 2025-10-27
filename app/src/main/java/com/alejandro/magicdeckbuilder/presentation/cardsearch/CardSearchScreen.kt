@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -229,7 +230,8 @@ fun CardSearchScreen(
                         Text(
                             "${uiState.errorMessage}",
                             style = MaterialTheme.typography.headlineSmall,
-                            color = White
+                            color = White,
+                            textAlign = TextAlign.Center
                         )
                     }
                 } else {
