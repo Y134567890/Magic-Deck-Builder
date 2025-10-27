@@ -1,9 +1,12 @@
 package com.alejandro.magicdeckbuilder.presentation.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -89,205 +92,212 @@ fun FilterDialog(
         onDismissRequest = onCancel, // Callback invocado cuando el usuario intenta cerrar el diálogo (ej. tocar fuera).
         properties = DialogProperties(usePlatformDefaultWidth = false) // Permite que el diálogo controle su propio ancho.
     ) {
-        // `Surface` proporciona una superficie de Material Design con forma, elevación y color.
-        Surface(
-            shape = MaterialTheme.shapes.medium, // Forma de esquinas redondeadas.
-            color = Black.copy(alpha = 0.95f), // Color de fondo del diálogo.
-            modifier = Modifier
-                .fillMaxWidth(0.9f) // Ocupa el 90% del ancho de la pantalla.
-                .padding(16.dp) // Padding exterior alrededor de la superficie.
+        // Box para manejar el tamaño y la alineación de la Surface
+        Box(
+            modifier = Modifier.fillMaxSize(), // Ocupa el espacio de la ventana al completo
+            contentAlignment = Alignment.Center // Centra la Surface
         ) {
-            Column(
+            // `Surface` proporciona una superficie de Material Design con forma, elevación y color.
+            Surface(
+                shape = MaterialTheme.shapes.medium, // Forma de esquinas redondeadas.
+                color = Black.copy(alpha = 0.95f), // Color de fondo del diálogo.
                 modifier = Modifier
-                    .padding(16.dp) // Padding interior para el contenido de la columna.
-                    .verticalScroll(rememberScrollState()) // Hace que la columna sea desplazable verticalmente si el contenido excede el tamaño.
-                    .imePadding() // Para el ajuste con el teclado
+                    .fillMaxWidth(0.9f) // Ocupa el 90% del ancho de la pantalla.
+                    .fillMaxHeight(0.9f) // Ocupa el 90% del alto de la pantalla.
+                    .padding(16.dp) // Padding exterior alrededor de la superficie.
             ) {
-                // Título del diálogo.
-                Text(
-                    text = "Filtrar Cartas",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = White,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                // Campo de texto para el Coste de Maná Convertido (CMC).
-                OutlinedTextField(
-                    value = cmc,
-                    onValueChange = { newValue ->
-                        // Validación de entrada:
-                        // Permite vacío o solo dígitos.
-                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d+$"))) {
-                            val intValue = newValue.toIntOrNull()
-                            // Si es numérico, valida que esté entre 0 y 8.
-                            if (intValue == null || (intValue in 0..8)) {
-                                cmc = newValue // Actualiza el estado local del CMC.
-                            }
-                        }
-                    },
-                    label = { Text("Coste de Maná (CMC)", color = White.copy(alpha = 0.7f)) }, // Etiqueta del campo
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Teclado numérico.
-                    modifier = Modifier.fillMaxWidth(), // Ocupa el ancho disponible.
-                    placeholder = { Text("0-8 (8 para 8 o más)", color = White.copy(alpha = 0.5f)) }, // Texto de ayuda.
-                    colors = OutlinedTextFieldDefaults.colors( // Se utilizan los colores de la app
-                        focusedBorderColor = Orange,
-                        unfocusedBorderColor = White.copy(alpha = 0.5f),
-                        focusedLabelColor = Orange,
-                        unfocusedLabelColor = White.copy(alpha = 0.7f),
-                        cursorColor = Orange,
-                        focusedTextColor = White,
-                        unfocusedTextColor = White,
-                        focusedContainerColor = Black, // Fondo del campo cuando está enfocado
-                        unfocusedContainerColor = Black // Fondo del campo cuando no está enfocado
-                    )
-                )
-                Spacer(Modifier.height(8.dp))
-
-                // Sección de filtros por Colores.
-                Text("Colores:", style = MaterialTheme.typography.titleMedium, color = White)
-                FilterCheckbox(text = "Blanca", checked = white) { white = it }
-                FilterCheckbox(text = "Azul", checked = blue) { blue = it }
-                FilterCheckbox(text = "Negra", checked = black) { black = it }
-                FilterCheckbox(text = "Roja", checked = red) { red = it }
-                FilterCheckbox(text = "Verde", checked = green) { green = it }
-                FilterCheckbox(text = "Incoloro", checked = colorless) { colorless = it }
-                Spacer(Modifier.height(8.dp))
-
-                // Sección de filtros por Tipos de Carta.
-                Text("Tipos de Carta:", style = MaterialTheme.typography.titleMedium, color = White)
-                FilterCheckbox(text = "Tierra", checked = isLand) { isLand = it }
-                FilterCheckbox(text = "Criatura", checked = isCreature) { isCreature = it }
-                FilterCheckbox(text = "Encantamiento", checked = isEnchantment) { isEnchantment = it }
-                FilterCheckbox(text = "Conjuro", checked = isSorcery) { isSorcery = it }
-                FilterCheckbox(text = "Instantáneo", checked = isInstant) { isInstant = it }
-                FilterCheckbox(text = "Planeswalker", checked = isPlaneswalker) { isPlaneswalker = it }
-                FilterCheckbox(text = "Artefacto", checked = isArtifact) { isArtifact = it } // Nuevo filtro
-                Spacer(Modifier.height(8.dp))
-
-                // Campo de texto para la Fuerza.
-                OutlinedTextField(
-                    value = power,
-                    onValueChange = { newValue ->
-                        // Validación de entrada:
-                        // Permite vacío o solo dígitos.
-                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d+$"))) {
-                            val intValue = newValue.toIntOrNull()
-                            // Si es numérico, valida que esté entre 0 y 20.
-                            if (intValue == null || (intValue in 0..20)) {
-                                power = newValue // Actualiza el estado local de la fuerza.
-                            }
-                        }
-                    },
-                    label = { Text("Fuerza (0-20)", color = White.copy(alpha = 0.7f)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors( // Nuevos colores para OutlinedTextField
-                        focusedBorderColor = Orange,
-                        unfocusedBorderColor = White.copy(alpha = 0.5f),
-                        focusedLabelColor = Orange,
-                        unfocusedLabelColor = White.copy(alpha = 0.7f),
-                        cursorColor = Orange,
-                        focusedTextColor = White,
-                        unfocusedTextColor = White,
-                        focusedContainerColor = Black,
-                        unfocusedContainerColor = Black
-                    )
-                )
-                Spacer(Modifier.height(8.dp))
-
-                // Campo de texto para la Resistencia.
-                OutlinedTextField(
-                    value = toughness,
-                    onValueChange = { newValue ->
-                        // Validación de entrada:
-                        // Permite vacío o solo dígitos.
-                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d+$"))) {
-                            val intValue = newValue.toIntOrNull()
-                            // Si es numérico, valida que esté entre 0 y 20.
-                            if (intValue == null || (intValue in 0..20)) {
-                                toughness = newValue // Actualiza el estado local de la resistencia.
-                            }
-                        }
-                    },
-                    label = { Text("Resistencia (0-20)", color = White.copy(alpha = 0.7f)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors( // Se utilizan los colores de la app
-                        focusedBorderColor = Orange,
-                        unfocusedBorderColor = White.copy(alpha = 0.5f),
-                        focusedLabelColor = Orange,
-                        unfocusedLabelColor = White.copy(alpha = 0.7f),
-                        cursorColor = Orange,
-                        focusedTextColor = White,
-                        unfocusedTextColor = White,
-                        focusedContainerColor = Black,
-                        unfocusedContainerColor = Black
-                    )
-                )
-                Spacer(Modifier.height(16.dp))
-
-                // Sección de botones de acción (Borrar, Cerrar, Aplicar).
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.End // Alinea los botones a la derecha.
+                    modifier = Modifier
+                        .padding(16.dp) // Padding interior para el contenido de la columna.
+                        .verticalScroll(rememberScrollState()) // Hace que la columna sea desplazable verticalmente si el contenido excede el tamaño.
+                        .imePadding() // Para el ajuste con el teclado
                 ) {
-                    // Botón "Borrar Filtros".
-                    Button(
-                        onClick = {
-                            onClearFilters() // Invoca el callback para borrar filtros.
+                    // Título del diálogo.
+                    Text(
+                        text = "Filtrar Cartas",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = White,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Campo de texto para el Coste de Maná Convertido (CMC).
+                    OutlinedTextField(
+                        value = cmc,
+                        onValueChange = { newValue ->
+                            // Validación de entrada:
+                            // Permite vacío o solo dígitos.
+                            if (newValue.isEmpty() || newValue.matches(Regex("^\\d+$"))) {
+                                val intValue = newValue.toIntOrNull()
+                                // Si es numérico, valida que esté entre 0 y 8.
+                                if (intValue == null || (intValue in 0..8)) {
+                                    cmc = newValue // Actualiza el estado local del CMC.
+                                }
+                            }
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Orange, // Fondo del botón en naranja
-                            contentColor = Black
+                        label = { Text("Coste de Maná (CMC)", color = White.copy(alpha = 0.7f)) }, // Etiqueta del campo
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Teclado numérico.
+                        modifier = Modifier.fillMaxWidth(), // Ocupa el ancho disponible.
+                        placeholder = { Text("0-8 (8 para 8 o más)", color = White.copy(alpha = 0.5f)) }, // Texto de ayuda.
+                        colors = OutlinedTextFieldDefaults.colors( // Se utilizan los colores de la app
+                            focusedBorderColor = Orange,
+                            unfocusedBorderColor = White.copy(alpha = 0.5f),
+                            focusedLabelColor = Orange,
+                            unfocusedLabelColor = White.copy(alpha = 0.7f),
+                            cursorColor = Orange,
+                            focusedTextColor = White,
+                            unfocusedTextColor = White,
+                            focusedContainerColor = Black, // Fondo del campo cuando está enfocado
+                            unfocusedContainerColor = Black // Fondo del campo cuando no está enfocado
                         )
-                    ) {
-                        Text("Borrar Filtros")
-                    }
+                    )
                     Spacer(Modifier.height(8.dp))
-                    // Botón "Cerrar".
-                    Button(
-                        onClick = onCancel, // Invoca el callback para cancelar/cerrar el diálogo.
+
+                    // Sección de filtros por Colores.
+                    Text("Colores:", style = MaterialTheme.typography.titleMedium, color = White)
+                    FilterCheckbox(text = "Blanca", checked = white) { white = it }
+                    FilterCheckbox(text = "Azul", checked = blue) { blue = it }
+                    FilterCheckbox(text = "Negra", checked = black) { black = it }
+                    FilterCheckbox(text = "Roja", checked = red) { red = it }
+                    FilterCheckbox(text = "Verde", checked = green) { green = it }
+                    FilterCheckbox(text = "Incoloro", checked = colorless) { colorless = it }
+                    Spacer(Modifier.height(8.dp))
+
+                    // Sección de filtros por Tipos de Carta.
+                    Text("Tipos de Carta:", style = MaterialTheme.typography.titleMedium, color = White)
+                    FilterCheckbox(text = "Tierra", checked = isLand) { isLand = it }
+                    FilterCheckbox(text = "Criatura", checked = isCreature) { isCreature = it }
+                    FilterCheckbox(text = "Encantamiento", checked = isEnchantment) { isEnchantment = it }
+                    FilterCheckbox(text = "Conjuro", checked = isSorcery) { isSorcery = it }
+                    FilterCheckbox(text = "Instantáneo", checked = isInstant) { isInstant = it }
+                    FilterCheckbox(text = "Planeswalker", checked = isPlaneswalker) { isPlaneswalker = it }
+                    FilterCheckbox(text = "Artefacto", checked = isArtifact) { isArtifact = it } // Nuevo filtro
+                    Spacer(Modifier.height(8.dp))
+
+                    // Campo de texto para la Fuerza.
+                    OutlinedTextField(
+                        value = power,
+                        onValueChange = { newValue ->
+                            // Validación de entrada:
+                            // Permite vacío o solo dígitos.
+                            if (newValue.isEmpty() || newValue.matches(Regex("^\\d+$"))) {
+                                val intValue = newValue.toIntOrNull()
+                                // Si es numérico, valida que esté entre 0 y 20.
+                                if (intValue == null || (intValue in 0..20)) {
+                                    power = newValue // Actualiza el estado local de la fuerza.
+                                }
+                            }
+                        },
+                        label = { Text("Fuerza (0-20)", color = White.copy(alpha = 0.7f)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Orange, // Fondo del botón en naranja
-                            contentColor = Black
+                        colors = OutlinedTextFieldDefaults.colors( // Nuevos colores para OutlinedTextField
+                            focusedBorderColor = Orange,
+                            unfocusedBorderColor = White.copy(alpha = 0.5f),
+                            focusedLabelColor = Orange,
+                            unfocusedLabelColor = White.copy(alpha = 0.7f),
+                            cursorColor = Orange,
+                            focusedTextColor = White,
+                            unfocusedTextColor = White,
+                            focusedContainerColor = Black,
+                            unfocusedContainerColor = Black
                         )
-                    ) {
-                        Text("Cerrar")
-                    }
+                    )
                     Spacer(Modifier.height(8.dp))
-                    // Botón "Aplicar".
-                    Button(
-                        onClick = {
-                            // Construye un nuevo objeto [Filters] con los valores de los estados locales.
-                            val newFilters = Filters(
-                                cmc = cmc.toIntOrNull()?.let { if (it > 8) 8 else it }, // Convierte a Int, maneja nulos y limita a 8 (para Scryfall 'mv>=8')
-                                white = white,
-                                green = green,
-                                red = red,
-                                black = black,
-                                blue = blue,
-                                colorless = colorless,
-                                isLand = isLand,
-                                isCreature = isCreature,
-                                power = power.toIntOrNull()?.let { max(0, min(20, it)) }, // Convierte a Int, maneja nulos y limita entre 0 y 20
-                                toughness = toughness.toIntOrNull()?.let { max(0, min(20, it)) }, // Convierte a Int, maneja nulos y limita entre 0 y 20
-                                isEnchantment = isEnchantment,
-                                isSorcery = isSorcery,
-                                isInstant = isInstant,
-                                isPlaneswalker = isPlaneswalker,
-                                isArtifact = isArtifact
+
+                    // Campo de texto para la Resistencia.
+                    OutlinedTextField(
+                        value = toughness,
+                        onValueChange = { newValue ->
+                            // Validación de entrada:
+                            // Permite vacío o solo dígitos.
+                            if (newValue.isEmpty() || newValue.matches(Regex("^\\d+$"))) {
+                                val intValue = newValue.toIntOrNull()
+                                // Si es numérico, valida que esté entre 0 y 20.
+                                if (intValue == null || (intValue in 0..20)) {
+                                    toughness = newValue // Actualiza el estado local de la resistencia.
+                                }
+                            }
+                        },
+                        label = { Text("Resistencia (0-20)", color = White.copy(alpha = 0.7f)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors( // Se utilizan los colores de la app
+                            focusedBorderColor = Orange,
+                            unfocusedBorderColor = White.copy(alpha = 0.5f),
+                            focusedLabelColor = Orange,
+                            unfocusedLabelColor = White.copy(alpha = 0.7f),
+                            cursorColor = Orange,
+                            focusedTextColor = White,
+                            unfocusedTextColor = White,
+                            focusedContainerColor = Black,
+                            unfocusedContainerColor = Black
+                        )
+                    )
+                    Spacer(Modifier.height(16.dp))
+
+                    // Sección de botones de acción (Borrar, Cerrar, Aplicar).
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.End // Alinea los botones a la derecha.
+                    ) {
+                        // Botón "Borrar Filtros".
+                        Button(
+                            onClick = {
+                                onClearFilters() // Invoca el callback para borrar filtros.
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Orange, // Fondo del botón en naranja
+                                contentColor = Black
                             )
-                            onApplyFilters(newFilters) // Invoca el callback con los nuevos filtros.
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Orange, // Fondo del botón en naranja
-                            contentColor = Black
-                        )
-                    ) {
-                        Text("Aplicar")
+                        ) {
+                            Text("Borrar Filtros")
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        // Botón "Cerrar".
+                        Button(
+                            onClick = onCancel, // Invoca el callback para cancelar/cerrar el diálogo.
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Orange, // Fondo del botón en naranja
+                                contentColor = Black
+                            )
+                        ) {
+                            Text("Cerrar")
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        // Botón "Aplicar".
+                        Button(
+                            onClick = {
+                                // Construye un nuevo objeto [Filters] con los valores de los estados locales.
+                                val newFilters = Filters(
+                                    cmc = cmc.toIntOrNull()?.let { if (it > 8) 8 else it }, // Convierte a Int, maneja nulos y limita a 8 (para Scryfall 'mv>=8')
+                                    white = white,
+                                    green = green,
+                                    red = red,
+                                    black = black,
+                                    blue = blue,
+                                    colorless = colorless,
+                                    isLand = isLand,
+                                    isCreature = isCreature,
+                                    power = power.toIntOrNull()?.let { max(0, min(20, it)) }, // Convierte a Int, maneja nulos y limita entre 0 y 20
+                                    toughness = toughness.toIntOrNull()?.let { max(0, min(20, it)) }, // Convierte a Int, maneja nulos y limita entre 0 y 20
+                                    isEnchantment = isEnchantment,
+                                    isSorcery = isSorcery,
+                                    isInstant = isInstant,
+                                    isPlaneswalker = isPlaneswalker,
+                                    isArtifact = isArtifact
+                                )
+                                onApplyFilters(newFilters) // Invoca el callback con los nuevos filtros.
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Orange, // Fondo del botón en naranja
+                                contentColor = Black
+                            )
+                        ) {
+                            Text("Aplicar")
+                        }
                     }
                 }
             }
